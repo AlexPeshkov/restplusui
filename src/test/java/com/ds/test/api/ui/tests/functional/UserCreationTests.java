@@ -15,6 +15,7 @@ import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -37,6 +38,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 
 public class UserCreationTests {
+
+    private final int HTTP_OK = 200;
+
     private static WebDriver driver;
     private static LoginPage loginPage;
     private static AllUserPage allUserPage;
@@ -121,7 +125,7 @@ public class UserCreationTests {
     @Issue("Case #3: Password with a space is split by line in UI")
     @Severity(SeverityLevel.MINOR)
     @Epic("LoginPage Functional Test")
-    @Feature("Create a new user with unique credentials and user details are to be available on 'New User' page correctly")
+    @Feature("Create a new user with unique credentials and user details are available on 'New User' page and Rest API returns correct user details")
     @Story("Creation New User when registration form is filled in properly")
     @ParameterizedTest
     @CsvSource(
@@ -163,6 +167,16 @@ public class UserCreationTests {
                             );
                         }
                 );
+        Response response = given()
+                .get(EndPoints.GETUSERJSON.getResource());
+        Assert.assertThat(response.getStatusCode(), is(equalTo(HTTP_OK)));
+        User userPj = GenericTestHelper.deserialization(response);
+        Assertions.assertAll(
+                ()-> Assert.assertThat(userPj.getName(), is(equalTo(newUser.getName()))),
+                ()-> Assert.assertThat(userPj.getEmail(), is(equalTo(newUser.getEmail()))),
+                ()-> Assert.assertThat(userPj.getPassword(), is(equalTo(newUser.getPassword()))),
+                ()-> Assert.assertNotNull(userPj.getId())
+        );
     }
 
     @Epic("LoginPage Functional Test")

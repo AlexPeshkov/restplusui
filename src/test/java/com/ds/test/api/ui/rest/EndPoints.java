@@ -3,7 +3,7 @@ package com.ds.test.api.ui.rest;
 public enum EndPoints {
     GET("/"),
     GETNEWUSER("/user/new"),
-    GETUSERJSON("/user/new/json"),
+    GETUSERJSON("/user/all/json"),
     POSTUSERSAVE("/user/save"),
     POSTUSERSAVEJSON("/user/save/json"),
     DELETEALLUSERS("/user/all");

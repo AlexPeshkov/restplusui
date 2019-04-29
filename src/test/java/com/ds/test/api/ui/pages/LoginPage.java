@@ -5,7 +5,6 @@ import com.ds.test.api.ui.GenericWebSteps;
 import com.ds.test.api.ui.PageConstants;
 import com.ds.test.api.ui.PageWebElements;
 import com.ds.test.api.ui.pojo.User;
-import org.junit.jupiter.api.AfterAll;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
