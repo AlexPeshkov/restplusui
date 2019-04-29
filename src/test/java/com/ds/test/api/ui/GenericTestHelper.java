@@ -8,8 +8,6 @@ import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.WebDriver;
 
-import java.util.Set;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 
@@ -28,15 +26,10 @@ public class GenericTestHelper {
         );
     }
 
-    @Step
-    public static void windowHandler(WebDriver webDriver) {
-        String origin= webDriver.getWindowHandle();
-        Set handles = webDriver.getWindowHandles();
-        for (String winHandle : webDriver.getWindowHandles()) {
+    public static void switchWindow(WebDriver webDriver) {
+        String winHandleBefore = webDriver.getWindowHandle();
+        for(String winHandle : webDriver.getWindowHandles()){
             webDriver.switchTo().window(winHandle);
         }
-        webDriver.close();
-        webDriver.switchTo().window(origin);
     }
-
 }

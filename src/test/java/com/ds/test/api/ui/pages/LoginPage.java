@@ -13,13 +13,15 @@ import org.openqa.selenium.support.PageFactory;
 
 public class LoginPage implements PageWebElements {
 
-
     private GenericWebSteps commands;
     private WebDriver webDriver;
 
     public String PASSWORD_ERROR_MIN = "Minimum size is 6";
     public String PASSWORD_ERROR_MAX = "Maximum size is 255";
-    public String PASSWORD_REQUIRED = "Required";
+    public String FIELD_IS_REQUIRED = "Required";
+    public String PASSWORD_NOT_THE_SAME = "passwords are not the same";
+    public String INVALID_EMAIL = "Invalid email address";
+    public String TO_BE_UNIQUE = "Must be unique";
 
     @FindBy(id = "name")
     public WebElement userName;
@@ -81,6 +83,17 @@ public class LoginPage implements PageWebElements {
         userEmail.sendKeys(user.getEmail());
         userPassword.sendKeys(user.getPassword());
         confirmationPassword.sendKeys(user.getPassword());
+        GenericTestHelper.isRegistrationFormFilled(
+                user, this
+        );
+        this.submitBtn.click();
+    }
+
+    public void createNewUser(User user, String passwordRepeat){
+        userName.sendKeys(user.getName());
+        userEmail.sendKeys(user.getEmail());
+        userPassword.sendKeys(user.getPassword());
+        confirmationPassword.sendKeys(passwordRepeat);
         GenericTestHelper.isRegistrationFormFilled(
                 user, this
         );

@@ -8,6 +8,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.List;
 
 public class AllUserPage implements PageWebElements {
 
@@ -16,6 +20,13 @@ public class AllUserPage implements PageWebElements {
 
     @FindBy(xpath = "//a[@href='/user/new']")
     public WebElement newUserBtn;
+
+    /**
+     * Users table
+     * @param webDriver
+     */
+    @FindBy(id = "users")
+    public WebElement usersTable;
 
     public AllUserPage(WebDriver webDriver) {
         PageFactory.initElements(webDriver, this);
@@ -32,6 +43,8 @@ public class AllUserPage implements PageWebElements {
         }
     }
 
-
-
+    public List<WebElement> getUsersTableAsList(WebDriver webDriver){
+        return new WebDriverWait(webDriver, 10).until(
+                ExpectedConditions.visibilityOfNestedElementsLocatedBy(this.usersTable, By.tagName("tr")));
+    }
 }
