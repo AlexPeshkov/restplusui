@@ -10,4 +10,3 @@ Project skeleton:
  How to Run:
  1) run tests: mvn clean test
  2) open Allure report: mvn allure:serve
- 
