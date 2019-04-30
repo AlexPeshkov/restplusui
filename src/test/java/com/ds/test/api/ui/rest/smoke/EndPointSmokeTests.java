@@ -15,15 +15,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
-import org.junit.jupiter.params.provider.CsvSource;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class EndPointSmokeTests {
+
+    private final static String randomStr = GenericTestHelper.randomString(4, true, true);
 
     @BeforeAll
     public static void setUp() {
@@ -62,7 +61,6 @@ public class EndPointSmokeTests {
     @Story("HTTP Code is to be 200 for POST /user/all/json and returns JSON object")
     @Test
     public void testUserSaveJsonEndPoint() {
-        String randomStr = GenericTestHelper.randomString(10, true, true);
         User newUser = new User(
                 "555" + randomStr,
                 "555@d.com" + randomStr,
@@ -90,8 +88,7 @@ public class EndPointSmokeTests {
     @Epic("RestAPI Smoke Test")
     @Story("Negative: HTTP Code is not to be 200 for POST /user/all/json with name missed")
     @Test
-    public void testUserSaveJsonIsNotSaveDueToMissingData() {
-        String randomStr = GenericTestHelper.randomString(4, true, true);
+    public void testUserSaveJsonIsNotSaveDueToNameMissed() {
         User newUser = new User(
                 "",
                 randomStr + "@d.com",
@@ -102,5 +99,65 @@ public class EndPointSmokeTests {
                 .post(EndPoints.POSTUSERSAVEJSON.getResource());
         Assert.assertThat(response.getStatusCode(), is(equalTo(500)));
 
+    }
+
+    @Issue("User can be saved with NULL email")
+    @Severity(SeverityLevel.CRITICAL)
+    @Epic("RestAPI Smoke Test")
+    @Story("Negative: HTTP Code is not to be 200 for POST /user/all/json with email missed")
+    @Test
+    public void testUserSaveJsonIsNotSaveDueToEmailMissed() {
+        User newUser = new User(
+                randomStr,
+                "",
+                randomStr
+        );
+        Response response = given()
+                .body(newUser)
+                .post(EndPoints.POSTUSERSAVEJSON.getResource());
+        Assert.assertThat(response.getStatusCode(), is(equalTo(500)));
+    }
+
+    @Issue("User can be saved with NULL password")
+    @Severity(SeverityLevel.CRITICAL)
+    @Epic("RestAPI Smoke Test")
+    @Story("Negative: HTTP Code is not to be 200 for POST /user/all/json with password missed")
+    @Test
+    public void testUserSaveJsonIsNotSaveDueToPasswordMissed() {
+        User newUser = new User(
+                randomStr,
+                randomStr + "@r.com",
+                ""
+        );
+        Response response = given()
+                .body(newUser)
+                .post(EndPoints.POSTUSERSAVEJSON.getResource());
+        Assert.assertThat(response.getStatusCode(), is(equalTo(500)));
+    }
+
+    @Issue("User can be saved with all empty credentials")
+    @Severity(SeverityLevel.CRITICAL)
+    @Epic("RestAPI Smoke Test")
+    @Story("Negative: HTTP Code is not to be 200 for POST /user/all/json with all data missed")
+    @Test
+    public void testUserSaveJsonIsNotSaveDueToAllDataMissed() {
+        User newUser = new User(
+                "",
+                "",
+                ""
+        );
+        given()
+                .body(newUser)
+                .post(EndPoints.POSTUSERSAVEJSON.getResource());
+        Response response = given()
+                .get(EndPoints.GETUSERJSON.getResource());
+        Assert.assertThat(response.getStatusCode(), is(equalTo(200)));
+        User user = GenericTestHelper.deserialization(response);
+        Assertions.assertAll(
+                () -> Assert.assertThat(user.getName(), Is.is(equalTo(""))),
+                () -> Assert.assertThat(user.getEmail(), Is.is(equalTo(""))),
+                () -> Assert.assertThat(user.getPassword(), Is.is(equalTo(""))),
+                () -> Assert.assertNotNull(user.getId())
+        );
     }
 }
