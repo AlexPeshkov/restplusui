@@ -28,6 +28,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.Arrays;
 import java.util.List;
@@ -52,9 +53,8 @@ public class UserCreationTests {
     public static void initWebDriver() {
         testWebDriver = TestWebDriver.newBuilder()
                 .setWebDriverManager(CHROME)
-                .setWebDriver()
                 .build();
-        driver = testWebDriver.getWebDriver();
+        driver = new ChromeDriver();
         loginPage = new LoginPage(driver);
         allUserPage = new AllUserPage(driver);
         commands = new GenericWebSteps(driver);
