@@ -5,9 +5,9 @@ import com.ds.test.api.ui.GenericTestHelper;
 import com.ds.test.api.ui.PageConstants;
 import com.ds.test.api.ui.pojo.User;
 import com.ds.test.api.ui.rest.EndPoints;
-import io.qameta.allure.Epic;
-import io.qameta.allure.Story;
+import io.qameta.allure.*;
 import io.restassured.RestAssured;
+import io.restassured.internal.assertion.AssertionSupport;
 import io.restassured.response.Response;
 import org.hamcrest.core.Is;
 import org.junit.Assert;
@@ -15,6 +15,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -79,5 +82,25 @@ public class EndPointSmokeTests {
                 () -> Assert.assertThat(user.getPassword(), Is.is(equalTo(newUser.getPassword()))),
                 () -> Assert.assertNotNull(user.getId())
         );
+    }
+
+
+    @Issue("User can be saved with NULL name")
+    @Severity(SeverityLevel.CRITICAL)
+    @Epic("RestAPI Smoke Test")
+    @Story("Negative: HTTP Code is not to be 200 for POST /user/all/json with name missed")
+    @Test
+    public void testUserSaveJsonIsNotSaveDueToMissingData() {
+        String randomStr = GenericTestHelper.randomString(4, true, true);
+        User newUser = new User(
+                "",
+                randomStr + "@d.com",
+                randomStr
+        );
+        Response response = given()
+                .body(newUser)
+                .post(EndPoints.POSTUSERSAVEJSON.getResource());
+        Assert.assertThat(response.getStatusCode(), is(equalTo(500)));
+
     }
 }
