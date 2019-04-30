@@ -4,6 +4,7 @@ import com.ds.test.api.ui.GenericTestHelper;
 import com.ds.test.api.ui.GenericWebSteps;
 import com.ds.test.api.ui.PageConstants;
 import com.ds.test.api.ui.TestWebDriver;
+import com.ds.test.api.ui.pages.LoginPageErrorMsg;
 import com.ds.test.api.ui.pojo.User;
 import com.ds.test.api.ui.pages.AllUserPage;
 import com.ds.test.api.ui.pages.LoginPage;
@@ -28,7 +29,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,8 +53,9 @@ public class UserCreationTests {
     public static void initWebDriver() {
         testWebDriver = TestWebDriver.newBuilder()
                 .setWebDriverManager(CHROME)
+                .setWebDriver()
                 .build();
-        driver = new ChromeDriver();
+        driver = testWebDriver.getWebDriver();
         loginPage = new LoginPage(driver);
         allUserPage = new AllUserPage(driver);
         commands = new GenericWebSteps(driver);
@@ -77,7 +78,7 @@ public class UserCreationTests {
                 "1234567"
         );
         loginPage.createNewUser(newUser);
-        Assert.assertThat(loginPage.userNameError.getText(), is(equalTo(loginPage.FIELD_IS_REQUIRED)));
+        Assert.assertThat(loginPage.userNameError.getText(), is(equalTo(LoginPageErrorMsg.IS_REQUIRED.getMessage())));
     }
 
     @Epic("LoginPage Functional Test")
@@ -91,7 +92,7 @@ public class UserCreationTests {
                 "1234567"
         );
         loginPage.createNewUser(newUser);
-        Assert.assertThat(loginPage.userEmailError.getText(), is(equalTo(loginPage.FIELD_IS_REQUIRED)));
+        Assert.assertThat(loginPage.userEmailError.getText(), is(equalTo(LoginPageErrorMsg.IS_REQUIRED.getMessage())));
     }
 
     @Epic("LoginPage Functional Test")
@@ -105,7 +106,7 @@ public class UserCreationTests {
                 "1234567"
         );
         loginPage.createNewUser(newUser);
-        Assert.assertThat(loginPage.userEmailError.getText(), is(equalTo(loginPage.INVALID_EMAIL)));
+        Assert.assertThat(loginPage.userEmailError.getText(), is(equalTo(LoginPageErrorMsg.EMAIL_IS_INVALID.getMessage())));
     }
 
     @Epic("LoginPage Functional Test")
@@ -119,7 +120,7 @@ public class UserCreationTests {
                 "1234567"
         );
         loginPage.createNewUser(newUser, "12345677");
-        Assert.assertThat(loginPage.userConfirmationPasswordError.getText(), is(equalTo(loginPage.PASSWORD_NOT_THE_SAME)));
+        Assert.assertThat(loginPage.userConfirmationPasswordError.getText(), is(equalTo(LoginPageErrorMsg.PASSWORD_NOT_THE_SAME.getMessage())));
     }
 
     @Issue("Case #3: Password with a space is split by line in UI")
@@ -184,21 +185,24 @@ public class UserCreationTests {
     @Story("Create two similar user, with identical name and email")
     @Test
     public void testIfSimilarUserCanBeCreatedTwice() {
+        String randomStr = GenericTestHelper.randomString(10, true, false);
         User newUser1 = new User(
-                "N",
-                "d@email.com",
+                randomStr,
+                randomStr.concat("@email.com"),
                 "123456"
         );
         User newUser2 = new User(
-                "N",
-                "d@email.com",
-                "123456"
+                randomStr,
+                randomStr.concat("@email.com"),
+                "1234567"
         );
         loginPage.createNewUser(newUser1);
+        GenericTestHelper.switchWindow(driver);
+        allUserPage.newUserBtn.click();
         loginPage.createNewUser(newUser2);
         Assertions.assertAll(
-                ()-> Assert.assertThat(loginPage.userNameError.getText(), is(equalTo(loginPage.TO_BE_UNIQUE))),
-                ()-> Assert.assertThat(loginPage.userEmailError.getText(), is(equalTo(loginPage.TO_BE_UNIQUE)))
+                ()-> Assert.assertThat(loginPage.userNameError.getText(), is(equalTo(LoginPageErrorMsg.TO_BE_UNIQUE.getMessage()))),
+                ()-> Assert.assertThat(loginPage.userEmailError.getText(), is(equalTo(LoginPageErrorMsg.TO_BE_UNIQUE.getMessage())))
         );
     }
 
@@ -231,13 +235,13 @@ public class UserCreationTests {
         loginPage.createNewUser(newUser);
         switch (number) {
             case 0:
-                Assert.assertThat(loginPage.userPasswordError.getText(), is(equalTo(loginPage.FIELD_IS_REQUIRED)));
+                Assert.assertThat(loginPage.userPasswordError.getText(), is(equalTo(LoginPageErrorMsg.IS_REQUIRED.getMessage())));
                 break;
             case 5:
-                Assert.assertThat(loginPage.userPasswordError.getText(), is(equalTo(loginPage.PASSWORD_ERROR_MIN)));
+                Assert.assertThat(loginPage.userPasswordError.getText(), is(equalTo(LoginPageErrorMsg.PASSWORD_ERROR_MIN.getMessage())));
                 break;
             case 256:
-                Assert.assertThat(loginPage.userPasswordError.getText(), is(equalTo(loginPage.PASSWORD_ERROR_MAX)));
+                Assert.assertThat(loginPage.userPasswordError.getText(), is(equalTo(LoginPageErrorMsg.PASSWORD_ERROR_MAX.getMessage())));
                 break;
         }
         cnt = +1;
