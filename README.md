@@ -13,7 +13,6 @@ Project skeleton:
  
  Allure report (examples):
  1) Overview
- 
  ![alt text](https://github.com/AlexPeshkov/restplusui/blob/master/src/test/resources/allure/pictures/Overview.png)
  
  2) Categories
