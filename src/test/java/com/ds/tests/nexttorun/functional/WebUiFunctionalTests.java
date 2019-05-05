@@ -129,14 +129,14 @@ public class WebUiFunctionalTests extends RestBaseFunctionalTest {
     @ParameterizedTest
     @CsvSource(
             {
-                    "A,a@db.com,1234567",
-                    "B,b@db.com,1234567",
-                    "1234djfndnsdmddd,_339dmsmdff@db.com,8374#$%$@&*@$^@! 3()&&#", //[1234djfndnsdmddd, _339dmsmdff@db.com, 8374#$%$@&*@$^@!, 3()&&#]
-                    "//\344555553(,9dmsmdff@db.com,8374#$%$@&*@$^@!3()&&#",
-                    " 1234,_@db.com,******///////#",
+                    "A,a@test.com,1234567",
+                    "B,b@test.com,1234567",
+                    "1234djfndnsdmddd,_339dmsmdff@test.com,8374#$%$@&*@$^@! 3()&&#", //[1234djfndnsdmddd, _339dmsmdff@test.com, 8374#$%$@&*@$^@!, 3()&&#]
+                    "//\344555553(,9dmsmdff@test.com,8374#$%$@&*@$^@!3()&&#",
+                    " 1234,_@test.com,******///////#",
             }
     )
-    public void createNewUserWithUniqueValues(ArgumentsAccessor argumentsAccessor) {
+    public void createNewUserWithUniqueCredentials(ArgumentsAccessor argumentsAccessor) {
         Assert.assertThat(RestBaseFunctionalTest.deleteUsers(), Matchers.is(equalTo(RestBaseFunctionalTest.HTTP_OK)));
         String name = argumentsAccessor.get(0).toString();
         String email = argumentsAccessor.get(1).toString();
@@ -180,7 +180,7 @@ public class WebUiFunctionalTests extends RestBaseFunctionalTest {
     @Feature("Negative: Application should support uniqueness of user")
     @Story("Create two similar user, with identical name and email")
     @Test
-    public void testIfSimilarUserCanBeCreatedTwice() {
+    public void testIfSimilarUserCanBeCreatedOneMoreTime() {
         String randomStr = GenericTestHelper.randomString(10, true, false);
         User newUser1 = new User(
                 randomStr,
@@ -207,11 +207,11 @@ public class WebUiFunctionalTests extends RestBaseFunctionalTest {
     @Story("UserPassword within [6;255] range")
     @ParameterizedTest
     @ValueSource(ints = {6, 100, 254, 255})
-    public void testIfPasswordWithIntMaxLenghtIsPossible(int number) {
+    public void testIfPasswordWithIntMaxLengthIsPossible(int number) {
         String randomString = GenericTestHelper.randomString(number, true, true);
         User newUser = new User(
                 "Alex" + cnt,
-                "alex" + cnt + "@xx.com",
+                "alex" + cnt + "@test.com",
                 randomString);
         loginPage.createNewUser(newUser);
         cnt += 1;
@@ -226,7 +226,7 @@ public class WebUiFunctionalTests extends RestBaseFunctionalTest {
         String randomString = GenericTestHelper.randomString(number, true, true);
         User newUser = new User(
                 "Alex" + cnt,
-                "alex" + cnt + "@xx.com",
+                "alex" + cnt + "@test.com",
                 randomString);
         loginPage.createNewUser(newUser);
         switch (number) {
