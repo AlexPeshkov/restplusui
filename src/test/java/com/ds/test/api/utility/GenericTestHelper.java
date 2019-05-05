@@ -1,7 +1,7 @@
-package com.ds.test.api.ui;
+package com.ds.test.api.utility;
 
-import com.ds.test.api.ui.pages.LoginPage;
-import com.ds.test.api.ui.pojo.User;
+import com.ds.pojo.User;
+import com.ds.ui.pages.LoginPage;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -32,7 +32,6 @@ public class GenericTestHelper {
     }
 
     public static void switchWindow(WebDriver webDriver) {
-        String winHandleBefore = webDriver.getWindowHandle();
         for (String winHandle : webDriver.getWindowHandles()) {
             webDriver.switchTo().window(winHandle);
         }

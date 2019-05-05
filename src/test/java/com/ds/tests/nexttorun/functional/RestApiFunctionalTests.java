@@ -1,18 +1,16 @@
-package com.ds.test.api.ui.rest.smoke;
+package com.ds.tests.nexttorun.functional;
 
 
-import com.ds.test.api.ui.GenericTestHelper;
-import com.ds.test.api.ui.PageConstants;
-import com.ds.test.api.ui.pojo.User;
-import com.ds.test.api.ui.rest.EndPoints;
+import com.ds.pojo.User;
+import com.ds.test.api.rest.RestBaseFunctionalTest;
+import com.ds.test.api.utility.GenericTestHelper;
+import com.ds.test.api.rest.EndPoints;
 import io.qameta.allure.*;
-import io.restassured.RestAssured;
-import io.restassured.internal.assertion.AssertionSupport;
 import io.restassured.response.Response;
 import org.hamcrest.core.Is;
 import org.junit.Assert;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,21 +18,13 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
-public class EndPointSmokeTests {
+public class RestApiFunctionalTests extends RestBaseFunctionalTest {
 
     private final static String randomStr = GenericTestHelper.randomString(4, true, true);
 
-    @BeforeAll
-    public static void setUp() {
-        RestAssured.baseURI = PageConstants.NEWUSER.getUrl();
-    }
-
     @BeforeEach
     public void deleteAllUsers() {
-        given()
-                .delete(EndPoints.DELETEALLUSERS.getResource())
-                .then()
-                .statusCode(200);
+        Assert.assertThat(RestBaseFunctionalTest.deleteUsers(), is(equalTo(RestBaseFunctionalTest.HTTP_OK)));
     }
 
     @Epic("RestAPI Smoke Test")
@@ -42,9 +32,9 @@ public class EndPointSmokeTests {
     @Test
     public void testNewUserEndPoint() {
         given()
-                .get(EndPoints.GETNEWUSER.getResource())
+                .get(EndPoints.NEWUSER.getResource())
                 .then()
-                .statusCode(200);
+                .statusCode(RestBaseFunctionalTest.HTTP_OK);
     }
 
     @Epic("RestAPI Smoke Test")
@@ -52,9 +42,9 @@ public class EndPointSmokeTests {
     @Test
     public void testUserAllJsonEndPoint() {
         given()
-                .get(EndPoints.GETUSERJSON.getResource())
+                .get(EndPoints.USERALLJSON.getResource())
                 .then()
-                .statusCode(200);
+                .statusCode(RestBaseFunctionalTest.HTTP_OK);
     }
 
     @Epic("RestAPI Smoke Test")
@@ -68,11 +58,11 @@ public class EndPointSmokeTests {
         );
         given()
                 .body(newUser)
-                .post(EndPoints.POSTUSERSAVEJSON.getResource())
-                .then().statusCode(200);
+                .post(EndPoints.USERSAVEJSON.getResource())
+                .then().statusCode(RestBaseFunctionalTest.HTTP_OK);
         Response response = given()
-                .get(EndPoints.GETUSERJSON.getResource());
-        Assert.assertThat(response.getStatusCode(), is(equalTo(200)));
+                .get(EndPoints.USERALLJSON.getResource());
+        Assert.assertThat(response.getStatusCode(), is(equalTo(RestBaseFunctionalTest.HTTP_OK)));
         User user = GenericTestHelper.deserialization(response);
         Assertions.assertAll(
                 () -> Assert.assertThat(user.getName(), Is.is(equalTo(newUser.getName()))),
@@ -96,8 +86,8 @@ public class EndPointSmokeTests {
         );
         Response response = given()
                 .body(newUser)
-                .post(EndPoints.POSTUSERSAVEJSON.getResource());
-        Assert.assertThat(response.getStatusCode(), is(equalTo(500)));
+                .post(EndPoints.USERSAVEJSON.getResource());
+        Assert.assertThat(response.getStatusCode(), is(equalTo(RestBaseFunctionalTest.HTTP_FAILED)));
 
     }
 
@@ -114,8 +104,8 @@ public class EndPointSmokeTests {
         );
         Response response = given()
                 .body(newUser)
-                .post(EndPoints.POSTUSERSAVEJSON.getResource());
-        Assert.assertThat(response.getStatusCode(), is(equalTo(500)));
+                .post(EndPoints.USERSAVEJSON.getResource());
+        Assert.assertThat(response.getStatusCode(), is(equalTo(RestBaseFunctionalTest.HTTP_FAILED)));
     }
 
     @Issue("User can be saved with NULL password")
@@ -131,8 +121,8 @@ public class EndPointSmokeTests {
         );
         Response response = given()
                 .body(newUser)
-                .post(EndPoints.POSTUSERSAVEJSON.getResource());
-        Assert.assertThat(response.getStatusCode(), is(equalTo(500)));
+                .post(EndPoints.USERSAVEJSON.getResource());
+        Assert.assertThat(response.getStatusCode(), is(equalTo(RestBaseFunctionalTest.HTTP_FAILED)));
     }
 
     @Issue("User can be saved with all empty credentials")
@@ -148,10 +138,10 @@ public class EndPointSmokeTests {
         );
         given()
                 .body(newUser)
-                .post(EndPoints.POSTUSERSAVEJSON.getResource());
+                .post(EndPoints.USERSAVEJSON.getResource());
         Response response = given()
-                .get(EndPoints.GETUSERJSON.getResource());
-        Assert.assertThat(response.getStatusCode(), is(equalTo(200)));
+                .get(EndPoints.USERALLJSON.getResource());
+        Assert.assertThat(response.getStatusCode(), is(equalTo(RestBaseFunctionalTest.HTTP_OK)));
         User user = GenericTestHelper.deserialization(response);
         Assertions.assertAll(
                 () -> Assert.assertThat(user.getName(), Is.is(equalTo(""))),
@@ -159,5 +149,13 @@ public class EndPointSmokeTests {
                 () -> Assert.assertThat(user.getPassword(), Is.is(equalTo(""))),
                 () -> Assert.assertNotNull(user.getId())
         );
+    }
+
+    @AfterAll
+    public static void deletAllTestUsers() {
+        /**
+         * Delete all test user created during the tests since there are left user records with blank fields
+         */
+        Assert.assertThat(RestBaseFunctionalTest.deleteUsers(), is(equalTo(RestBaseFunctionalTest.HTTP_OK)));
     }
 }

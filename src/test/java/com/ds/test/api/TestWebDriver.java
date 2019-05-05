@@ -1,4 +1,4 @@
-package com.ds.test.api.ui;
+package com.ds.test.api;
 
 import io.github.bonigarcia.wdm.DriverManagerType;
 import io.github.bonigarcia.wdm.WebDriverManager;

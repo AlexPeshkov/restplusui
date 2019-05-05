@@ -1,4 +1,4 @@
-package com.ds.test.api.ui.pages;
+package com.ds.ui.pages;
 
 public enum LoginPageErrorMsg {
 

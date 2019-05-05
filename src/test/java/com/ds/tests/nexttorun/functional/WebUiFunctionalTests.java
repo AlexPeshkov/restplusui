@@ -1,22 +1,23 @@
-package com.ds.test.api.ui.tests.functional;
+package com.ds.tests.nexttorun.functional;
 
-import com.ds.test.api.ui.GenericTestHelper;
+import com.ds.pojo.User;
+import com.ds.test.api.rest.BasePath;
+import com.ds.test.api.rest.RestBaseFunctionalTest;
+import com.ds.test.api.utility.GenericTestHelper;
 import com.ds.test.api.ui.GenericWebSteps;
-import com.ds.test.api.ui.PageConstants;
-import com.ds.test.api.ui.TestWebDriver;
-import com.ds.test.api.ui.pages.LoginPageErrorMsg;
-import com.ds.test.api.ui.pojo.User;
-import com.ds.test.api.ui.pages.AllUserPage;
-import com.ds.test.api.ui.pages.LoginPage;
-import com.ds.test.api.ui.rest.EndPoints;
+import com.ds.test.api.TestWebDriver;
+import com.ds.ui.pages.LoginPageErrorMsg;
+import com.ds.ui.pages.AllUserPage;
+import com.ds.ui.pages.LoginPage;
+import com.ds.test.api.rest.EndPoints;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Issue;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import io.qameta.allure.Story;
-import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -38,9 +39,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 
-public class UserCreationTests {
-
-    private final int HTTP_OK = 200;
+public class WebUiFunctionalTests extends RestBaseFunctionalTest {
 
     private static WebDriver driver;
     private static LoginPage loginPage;
@@ -59,12 +58,11 @@ public class UserCreationTests {
         loginPage = new LoginPage(driver);
         allUserPage = new AllUserPage(driver);
         commands = new GenericWebSteps(driver);
-        RestAssured.baseURI = PageConstants.NEWUSER.getUrl();
     }
 
     @BeforeEach
     public void init() {
-        driver.get(PageConstants.NEWUSER.getUrl());
+        driver.get(BasePath.BASEURL.getResource());
     }
 
     @Epic("LoginPage Functional Test")
@@ -123,8 +121,8 @@ public class UserCreationTests {
         Assert.assertThat(loginPage.userConfirmationPasswordError.getText(), is(equalTo(LoginPageErrorMsg.PASSWORD_NOT_THE_SAME.getMessage())));
     }
 
-    @Issue("Case #3: Password with a space is split by line in UI")
-    @Severity(SeverityLevel.MINOR)
+    @Issue("Case #3: Password with a space is split by line in UI, i.e. Get /user/all/json returns User Object with 4 fields!")
+    @Severity(SeverityLevel.NORMAL)
     @Epic("LoginPage Functional Test")
     @Feature("Create a new user with unique credentials and user details are available on 'New User' page and Rest API returns correct user details")
     @Story("Creation New User when registration form is filled in properly")
@@ -133,16 +131,13 @@ public class UserCreationTests {
             {
                     "A,a@db.com,1234567",
                     "B,b@db.com,1234567",
-                    "1234djfndnsdmddd,_339dmsmdff@db.com,8374#$%$@&*@$^@! 3()&&#", //with space (fail)
+                    "1234djfndnsdmddd,_339dmsmdff@db.com,8374#$%$@&*@$^@! 3()&&#", //[1234djfndnsdmddd, _339dmsmdff@db.com, 8374#$%$@&*@$^@!, 3()&&#]
                     "//\344555553(,9dmsmdff@db.com,8374#$%$@&*@$^@!3()&&#",
                     " 1234,_@db.com,******///////#",
             }
     )
     public void createNewUserWithUniqueValues(ArgumentsAccessor argumentsAccessor) {
-        given()
-                .delete(EndPoints.DELETEALLUSERS.getResource())
-                .then()
-                .statusCode(200);
+        Assert.assertThat(RestBaseFunctionalTest.deleteUsers(), Matchers.is(equalTo(RestBaseFunctionalTest.HTTP_OK)));
         String name = argumentsAccessor.get(0).toString();
         String email = argumentsAccessor.get(1).toString();
         String password = argumentsAccessor.get(2).toString();
@@ -161,6 +156,7 @@ public class UserCreationTests {
                 .forEach(
                         row -> {
                             List<String> arrayList = Arrays.asList(row.getText().split("\\s+"));
+                            System.out.println("Users -> " + arrayList);
                             Assertions.assertAll(
                                     () -> Assert.assertThat(arrayList.get(0), is(equalTo(newUser.getName()))),
                                     () -> Assert.assertThat(arrayList.get(1), is(equalTo(newUser.getEmail()))),
@@ -169,7 +165,7 @@ public class UserCreationTests {
                         }
                 );
         Response response = given()
-                .get(EndPoints.GETUSERJSON.getResource());
+                .get(EndPoints.USERALLJSON.getResource());
         Assert.assertThat(response.getStatusCode(), is(equalTo(HTTP_OK)));
         User userPj = GenericTestHelper.deserialization(response);
         Assertions.assertAll(

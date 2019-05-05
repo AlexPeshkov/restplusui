@@ -1,4 +1,4 @@
-package com.ds.test.api.ui.pojo;
+package com.ds.pojo;
 
 public class User {
 
@@ -45,13 +45,6 @@ public class User {
         this.password = password;
     }
 
-    public User(String name, String email, String password, String id) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.id = id;
-    }
-
     @Override
     public String toString() {
         return "User{" +
@@ -60,5 +53,4 @@ public class User {
                 ", password='" + password + '\'' +
                 '}';
     }
-
 }
