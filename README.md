@@ -2,17 +2,20 @@
 This project is an example of Selenium WebDriver UI and RestApi test pack for simple Login Form with Allure based reporting upon tests completion
 
 <h4>The project's skeleton:</h4>
- - mvn
- - junit5
- - selenium WebDriver
- - WebDriverManager (https://github.com/bonigarcia/webdrivermanager)
- - Allure + Allure Annotations
+<ul style="list-style-type:disc;">
+  <li>mvn</li>
+  <li>junit5</li>
+  <li>Selenium WebDriver</li>
+  <li>WebDriverManager (https://github.com/bonigarcia/webdrivermanager)</li>
+  <li>Allure + Allure Annotations</li>
+</ul>  
 
  <h4>How to Run:</h4>
  1) run tests: <b><i>mvn clean test</i></b>
  2) open Allure report: <b><i>mvn allure:serve</i></b>
  
  <h4>Allure report (examples):<h4>
+ 
  <b>1) Overview</b>
  ![alt text](https://github.com/AlexPeshkov/restplusui/blob/master/src/test/resources/allure/pictures/Overview.png)
  
