@@ -47,8 +47,35 @@ public class RestApiFunctionalTests extends RestBaseFunctionalTest {
                 .statusCode(RestBaseFunctionalTest.HTTP_OK);
     }
 
-    @Epic("RestAPI Smoke Test")
-    @Story("HTTP Code is to be 200 for POST /user/all/json and returns JSON object")
+    @Issue("Fail to save User due to the issue: if (!user.password.equals(confirmationPassword))")
+    @Severity(SeverityLevel.NORMAL)
+    @Epic("RestAPI Functional Test")
+    @Story("HTTP Code is to be 200 for POST /user/save and returns JSON object")
+    @Test
+    public void testUserSaveEndPoint() {
+        User newUser = new User(
+                "123" + randomStr,
+                "123@d.com" + randomStr,
+                randomStr
+        );
+        given()
+                .body(newUser)
+                .post(EndPoints.USERSAVE.getResource())
+                .then().statusCode(RestBaseFunctionalTest.HTTP_OK);
+        Response response = given()
+                .get(EndPoints.USERALLJSON.getResource());
+        Assert.assertThat(response.getStatusCode(), is(equalTo(RestBaseFunctionalTest.HTTP_OK)));
+        User user = GenericTestHelper.deserialization(response);
+        Assertions.assertAll(
+                () -> Assert.assertThat(user.getName(), Is.is(equalTo(newUser.getName()))),
+                () -> Assert.assertThat(user.getEmail(), Is.is(equalTo(newUser.getEmail()))),
+                () -> Assert.assertThat(user.getPassword(), Is.is(equalTo(newUser.getPassword()))),
+                () -> Assert.assertNotNull(user.getId())
+        );
+    }
+
+    @Epic("RestAPI Functional Test")
+    @Story("HTTP Code is to be 200 for POST /user/save/json and returns JSON object")
     @Test
     public void testUserSaveJsonEndPoint() {
         User newUser = new User(
@@ -75,7 +102,7 @@ public class RestApiFunctionalTests extends RestBaseFunctionalTest {
 
     @Issue("User can be saved with NULL name")
     @Severity(SeverityLevel.CRITICAL)
-    @Epic("RestAPI Smoke Test")
+    @Epic("RestAPI Functional Test")
     @Story("Negative: HTTP Code is not to be 200 for POST /user/all/json with name missed")
     @Test
     public void testUserSaveJsonIsNotSaveDueToNameMissed() {
@@ -93,7 +120,7 @@ public class RestApiFunctionalTests extends RestBaseFunctionalTest {
 
     @Issue("User can be saved with NULL email")
     @Severity(SeverityLevel.CRITICAL)
-    @Epic("RestAPI Smoke Test")
+    @Epic("RestAPI Functional Test")
     @Story("Negative: HTTP Code is not to be 200 for POST /user/all/json with email missed")
     @Test
     public void testUserSaveJsonIsNotSaveDueToEmailMissed() {
@@ -110,7 +137,7 @@ public class RestApiFunctionalTests extends RestBaseFunctionalTest {
 
     @Issue("User can be saved with NULL password")
     @Severity(SeverityLevel.CRITICAL)
-    @Epic("RestAPI Smoke Test")
+    @Epic("RestAPI Functional Test")
     @Story("Negative: HTTP Code is not to be 200 for POST /user/all/json with password missed")
     @Test
     public void testUserSaveJsonIsNotSaveDueToPasswordMissed() {
@@ -127,7 +154,7 @@ public class RestApiFunctionalTests extends RestBaseFunctionalTest {
 
     @Issue("User can be saved with all empty credentials")
     @Severity(SeverityLevel.CRITICAL)
-    @Epic("RestAPI Smoke Test")
+    @Epic("RestAPI Functional Test")
     @Story("Negative: HTTP Code is not to be 200 for POST /user/all/json with all data missed")
     @Test
     public void testUserSaveJsonIsNotSaveDueToAllDataMissed() {
@@ -152,7 +179,7 @@ public class RestApiFunctionalTests extends RestBaseFunctionalTest {
     }
 
     @AfterAll
-    public static void deletAllTestUsers() {
+    public static void deleteAllTestUsers() {
         /**
          * Delete all test user created during the tests since there are left user records with blank fields
          */
