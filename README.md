@@ -10,3 +10,14 @@ Project skeleton:
  How to Run:
  1) run tests: mvn clean test
  2) open Allure report: mvn allure:serve
+ 
+ Allure report (examples):
+ 1) Overview
+ 
+ ![alt text](https://github.com/AlexPeshkov/restplusui/blob/master/src/test/resources/allure/pictures/Overview.png)
+ 
+ 2) Categories
+ ![alt text](https://github.com/AlexPeshkov/restplusui/blob/master/src/test/resources/allure/pictures/Categories.png)
+ 
+ 3) Packages
+  ![alt text](https://github.com/AlexPeshkov/restplusui/blob/master/src/test/resources/allure/pictures/Packages.png)
