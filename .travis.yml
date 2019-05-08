@@ -1,0 +1,22 @@
+language: java
+jdk: oraclejdk8
+
+env:
+  global:
+    - PROJECT_DIR=${TRAVIS_BUILD_DIR} # Project directory
+
+notifications:
+  email: false
+
+before_script:
+  - echo "Starting build..."
+
+script:
+  - cd ${PROJECT_DIR} && mvn clean install
+
+after_script:
+  - mvn allure:serve
+  - echo "Build was successful. $TRAVIS_TEST_RESULT"
+  - ls -l $TRAVIS_BUILD_DIR/target
+
+
