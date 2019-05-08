@@ -15,7 +15,7 @@ script:
   - cd ${PROJECT_DIR} && mvn clean install
 
 after_script:
-  - echo "Build was successful. $TRAVIS_TEST_RESULT"
+  - echo "Test Result -> $TRAVIS_TEST_RESULT"
   - ls -l $TRAVIS_BUILD_DIR/target
 
 
