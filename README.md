@@ -1,5 +1,7 @@
+[![Build Status](https://travis-ci.com/AlexPeshkov/restplusui.svg?branch=master)](https://travis-ci.com/AlexPeshkov/restplusui)
+
 <h3>Overview</h3>
-This project is an example of Selenium WebDriver UI and RestApi test pack for simple Login Form with Allure based reporting upon tests completion
+This project is an example of Selenium WebDriver UI and RestApi test pack for simple Login Form with Allure based reporting
 
 <h4>The project's skeleton:</h4>
 <ul style="list-style-type:disc;">
