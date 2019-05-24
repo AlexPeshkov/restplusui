@@ -5,7 +5,7 @@ dist: trusty
 addons:
   apt:
     packages:
-      -google-chrome-stable
+      - google-chrome-stable
 
 env:
   global:
