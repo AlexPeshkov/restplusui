@@ -10,6 +10,7 @@ This project is an example of Selenium WebDriver UI and RestApi test pack for si
   <li>Selenium WebDriver</li>
   <li>WebDriverManager (https://github.com/bonigarcia/webdrivermanager)</li>
   <li>Allure + Allure Annotations</li>
+  <li>Travis CI</li>
 </ul>  
 
  <h4>How to Run:</h4>
